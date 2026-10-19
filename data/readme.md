@@ -1,47 +1,63 @@
-# HR Analytics – Làm sạch dữ liệu nhân sự bằng SQL
+# Data Documentation
 
-## 1. Giới thiệu
+## 1. Data Source
 
-Dự án làm sạch và chuẩn bị dữ liệu nhân sự của một công ty (4,410 nhân viên) bằng SQL, phục vụ phân tích nguyên nhân nghỉ việc (attrition), mức độ hài lòng và thời gian làm việc.
+This project uses a Human Resources (HR) dataset containing employee demographics, job characteristics, compensation, satisfaction, and weekly attendance records.
 
-## 2. Dữ liệu
+- **Dataset:** HR Employee Attrition Dataset
+- **Source:** HR dataset provided for this project
+- **Data type:** Employee-level HR records, employee survey responses, and weekly attendance data
+- **Purpose:** Employee attrition analysis, workforce demographics analysis, compensation and career development analysis, employee satisfaction analysis, and attendance and overtime analysis.
 
-| File | Nội dung | Số dòng | Số cột |
-|---|---|---|---|
-| `general_data.csv` | Thông tin chung: nhân khẩu học, công việc, lương, thâm niên, nghỉ việc | 4,410 | 24 |
-| `employee_survey_data.csv` | Khảo sát mức hài lòng của nhân viên | 4,410 | 4 |
-| `attendance_weekly.csv` | Chấm công theo tuần (12/2014 – 12/2015) | 233,511 | 
+## 2. Dataset Structure
 
-### Quan hệ giữa các bảng
+The original dataset contains the following tables:
 
-```
-general_data (1) ──── (1) employee_survey_data     [EmployeeID]
-general_data (1) ──── (N) attendance_weekly        [EmployeeID]
-```
+| Table | Description |
+|---|---|
+| `general_data` | Employee demographics, job characteristics, compensation, career history, and attrition status |
+| `employee_survey_data` | Employee satisfaction with the working environment, job satisfaction, and work-life balance |
+| `attendance_weekly` | Weekly employee attendance records, including days worked, average working hours, and overtime days |
 
-## 3. Vấn đề chất lượng dữ liệu đã phát hiện
+The `general_data` and `employee_survey_data` tables contain employee-level records, while `attendance_weekly` contains multiple weekly records for each employee.
 
-| Bảng | Vấn đề | Hướng xử lý |
-|---|---|---|
-| `employee_survey_data` | `NA` ở `EnvironmentSatisfaction` (25), `JobSatisfaction` (20), `WorkLifeBalance` (38); cột bị import thành String | Chuyển `NA` → `NULL`, ép kiểu INT; quyết định giữ NULL hoặc điền (mode/median) |
-| `general_data` | `NA` ở `NumCompaniesWorked` (19), `TotalWorkingYears` (9); cột bị import thành String | Chuyển `NA` → `NULL`, ép kiểu INT |
-| `general_data` | Cột hằng số: `EmployeeCount`, `StandardHours`, `Over18` | Loại khỏi bảng phân tích |
-| `general_data` | `MonthlyIncome` tính bằng rupee | Ghi rõ đơn vị khi trình bày |
-| `attendance_weekly` | `WeekStart` là Date; bảng lớn (233k dòng) | Tạo index theo (`EmployeeID`, `WeekStart`), gom theo nhân viên khi join |
-| Tất cả | Mã nhân viên là `EmployeeID` (CSV) nhưng `EmployeeNumber` (xlsx) | Thống nhất dùng `EmployeeID` |
+All three tables can be linked using `EmployeeID`.
 
-Đã kiểm tra: không có dòng trùng, không trùng khóa (`EmployeeID`, `WeekStart`), tập `EmployeeID` của 3 bảng khớp nhau, `OvertimeDays` ≤ `DaysWorked`, `TotalWorkingYears` ≥ `YearsAtCompany`.
+## 3. Data Processing
 
-## 4. Quy trình thực hiện
+The raw datasets are processed using SQL clean,SQL analysis and Power BI visualization.
 
-1. **Import** 3 file CSV vào database (giữ các cột chứa `NA` ở dạng text).
-2. **Profiling**: đếm dòng, NULL, giá trị duy nhất, min/max từng cột.
-3. **Cleaning**: xử lý `NA`, ép kiểu, bỏ cột hằng số, kiểm tra tính nhất quán logic.
-4. **Tổng hợp attendance**: tính theo nhân viên (tổng ngày làm, giờ làm TB, tổng ngày OT).
-5. **Tạo bảng/view sạch** `clean_general_data`, `clean_employee_survey`, `clean_attendance_weekly`
-6. **Câu hỏi phân tích**
-7. **Phân tích / trực quan hóa** PowerBi.
+Main data preparation steps include:
 
+- Inspecting data types, missing values, and duplicate records.
+- Standardizing categorical values and converting data types.
+- Processing weekly attendance dates and validating attendance records.
+- Handling missing employee information and survey responses where appropriate.
+- Validating employee identifiers and relationships between datasets.
+- Aggregating weekly attendance records into employee-level metrics.
+- Preparing cleaned datasets for downstream analysis and visualization.
 
+Refer to the notebooks in the `notebooks/` directory for implementation details.
 
-.
+## 4. How to Obtain the Data
+
+The original datasets are available in the `data/raw/` directory of this GitHub repository.
+
+1. Clone or download this repository to your local machine.
+2. Navigate to the `data/raw/` directory to access the three original CSV files:
+   - `general_data.csv`
+   - `employee_survey_data.csv`
+   - `attendance_weekly.csv`
+3. Run the data cleaning and preprocessing notebooks in the `notebooks/` directory.
+4. Follow the SQL setup instructions to import the cleaned datasets into SQL Server.
+5. Configure the data source paths in Power BI to load the processed data.
+
+No additional dataset download is required.
+
+## 5. Reproducibility Notes
+
+The analysis results depend on the dataset version, data cleaning decisions, attendance aggregation methods, and metric definitions.
+
+For consistent results, use the same source dataset and follow the documented preprocessing steps.
+
+Employee attrition analysis should be performed at the employee level to avoid duplicate counting caused by weekly attendance records.
