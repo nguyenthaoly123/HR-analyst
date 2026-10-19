@@ -48,7 +48,7 @@ The original datasets are available in the `data/raw/` directory of this GitHub 
    - `general_data.csv`
    - `employee_survey_data.csv`
    - `attendance_weekly.csv`
-3. Run the data cleaning and preprocessing notebooks in the `notebooks/` directory.
+3. Run the data cleaning and preprocessing notebooks in the `sql/` directory.
 4. Follow the SQL setup instructions to import the cleaned datasets into SQL Server.
 5. Configure the data source paths in Power BI to load the processed data.
 
