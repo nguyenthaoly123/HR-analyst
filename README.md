@@ -154,7 +154,6 @@ HR-analyst/
 └── README.md
 ```
 
-*Note: The structure shows the confirmed raw datasets and documented SQL cleaning files, together with suggested locations for Power BI and reporting materials. Update the remaining paths to match the actual repository.*
 
 ### Directory and File Descriptions
 
@@ -198,8 +197,6 @@ The project uses three employee-level and attendance datasets:
 All three original datasets are available in the repository:
 
 [View Raw HR Datasets](data/raw/)
-
-The datasets are linked by `EmployeeID` and support integrated employee attrition analysis.
 
 ## 7. Author
 
